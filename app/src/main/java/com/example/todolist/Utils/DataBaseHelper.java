@@ -15,8 +15,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
     private SQLiteDatabase db;
@@ -29,12 +31,15 @@ private static final String COL_1 = "Status";
 
 
     public DataBaseHelper(@Nullable Context context) {
-        super(context, DATABASE_NAME, null, 1);
+        super(context, DATABASE_NAME, null, 3);
 
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + SECOND_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + THIRD_TABLE_NAME);
         db.execSQL("CREATE TABLE IF NOT EXISTS " +
                 TABLE_NAME +
                 "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT NOT NULL)");
@@ -46,9 +51,11 @@ private static final String COL_1 = "Status";
                 + TABLE_NAME + "(id), date_create TEXT NOT NULL, date_end TEXT, status_id INTEGER REFERENCES "
                 + THIRD_TABLE_NAME + "(id))");
 
-        db.execSQL("INSERT INTO " + THIRD_TABLE_NAME + " VALUES ('Ожидает выполнения')");
-        db.execSQL("INSERT INTO " + THIRD_TABLE_NAME + " VALUES ('Просрочено')");
-        db.execSQL("INSERT INTO " + THIRD_TABLE_NAME + " VALUES ('Выполнено')");
+
+        db.execSQL("INSERT INTO " + TABLE_NAME+ " values (1,'Ожидает выполнения')");
+        db.execSQL("INSERT INTO " + THIRD_TABLE_NAME + " VALUES (1,'Ожидает выполнения')");
+        db.execSQL("INSERT INTO " + THIRD_TABLE_NAME + " VALUES (2,'Просрочено')");
+        db.execSQL("INSERT INTO " + THIRD_TABLE_NAME + " VALUES (3,'Выполнено')");
     }
 
     @Override
@@ -83,6 +90,12 @@ private static final String COL_1 = "Status";
         db.update(SECOND_TABLE_NAME, values, "id+?", new String[]{String.valueOf(id)});
      }
 
+    public void updateGroup(int id, String name){
+        db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("name", name);
+        db.update(TABLE_NAME, values, "id+?", new String[]{String.valueOf(id)});
+    }
      public void updateStatus(int id, int status){
          db = this.getWritableDatabase();
          ContentValues values = new ContentValues();
@@ -105,7 +118,8 @@ private static final String COL_1 = "Status";
         Cursor cursor = null;
         List<TaskModel> modelList = new ArrayList<>();
         db.beginTransaction();
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+        SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzzz yyyy");
+        formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
         try{
             cursor = db.query(SECOND_TABLE_NAME, null, null, null,null,null,null);
             if(cursor != null){

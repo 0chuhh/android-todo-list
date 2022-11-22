@@ -1,12 +1,15 @@
 package com.example.todolist.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,8 +18,10 @@ import com.example.todolist.AddNewTask;
 import com.example.todolist.MainActivity;
 import com.example.todolist.Model.TaskModel;
 import com.example.todolist.R;
+import com.example.todolist.SplashActivity;
 import com.example.todolist.Utils.DataBaseHelper;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder> {
@@ -41,15 +46,24 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         final TaskModel item = mList.get(position);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
+        holder.mTextView.setText(formatter.format(item.getDate_create()));
         holder.mCheckBox.setText(item.getName());
         holder.mCheckBox.setChecked(item.getStatus_id() == 1);
         holder.mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChacked) {
                 if(isChacked){
-                    myDB.updateStatus(item.getId(), 0);
-                }else{
                     myDB.updateStatus(item.getId(), 1);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            deleteTask(position);
+                        }
+                    },1200);
+
+                }else{
+                    myDB.updateStatus(item.getId(), 0);
                 }
             }
         });
@@ -88,9 +102,11 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder> 
 
     public static class MyViewHolder extends RecyclerView.ViewHolder{
         CheckBox mCheckBox;
+        TextView mTextView;
         public MyViewHolder(@NonNull View itemView){
             super(itemView);
             mCheckBox = itemView.findViewById(R.id.mCheckbox);
+            mTextView = itemView.findViewById(R.id.date);
         }
     }
 }
