@@ -9,11 +9,15 @@
 
     <LinearLayout
         android:id="@+id/iphone_8_1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="500dp"
+        android:layout_height="800dp"
         android:background="@drawable/background_splash"
         android:gravity="center"
 
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints"
         tools:targetApi="s">
 
@@ -21,8 +25,8 @@
             android:id="@+id/imageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:srcCompat="@drawable/splash_text"
-            android:contentDescription="TODO" />
+            android:contentDescription="TODO"
+            app:srcCompat="@drawable/splash_text" />
     </LinearLayout>
 
 
