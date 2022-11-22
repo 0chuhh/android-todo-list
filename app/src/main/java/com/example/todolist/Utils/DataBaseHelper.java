@@ -46,7 +46,9 @@ private static final String COL_1 = "Status";
                 + TABLE_NAME + "(id), date_create TEXT NOT NULL, date_end TEXT, status_id INTEGER REFERENCES "
                 + THIRD_TABLE_NAME + "(id))");
 
-        db.execSQL("INSERT INTO " + THIRD_TABLE_NAME + " VALUES ('Ожидает выполнения', 'Выполнено', 'Просрочено')");
+        db.execSQL("INSERT INTO " + THIRD_TABLE_NAME + " VALUES ('Ожидает выполнения')");
+        db.execSQL("INSERT INTO " + THIRD_TABLE_NAME + " VALUES ('Просрочено')");
+        db.execSQL("INSERT INTO " + THIRD_TABLE_NAME + " VALUES ('Выполнено')");
     }
 
     @Override
