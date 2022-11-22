@@ -10,11 +10,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="8dp">
+
         <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/mCheckbox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="This is task text"
-            android:buttonTint="@color/purple_200"/>
+            android:buttonTint="@color/purple_200"
+            android:text="This is task text" />
     </RelativeLayout>
 
 </androidx.cardview.widget.CardView>

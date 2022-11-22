@@ -20,6 +20,7 @@
         app:srcCompat="@drawable/base_border" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/resyclerview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@+id/floatingActionButton"
