@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.example.todolist.Adapter.TaskAdapter;
+import com.example.todolist.Model.GroupedTasks;
 import com.example.todolist.Model.TaskModel;
 import com.example.todolist.Utils.DataBaseHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -24,7 +25,7 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
     private RecyclerView mrecyclerView;
     private FloatingActionButton mfab;
     private DataBaseHelper myDB;
-    private List<TaskModel> mList;
+    private List<GroupedTasks> mList;
     private TaskAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
         mrecyclerView.setHasFixedSize(true);
         mrecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mrecyclerView.setAdapter(adapter);
-        mList = myDB.getAllTasks();
+        mList = myDB.getGroupedTasks();
         Collections.reverse(mList);
         adapter.setTasks(mList);
 
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
 
     @Override
     public void onDialogClose(DialogInterface dialogInterface) {
-        mList = myDB.getAllTasks();
+        mList = myDB.getGroupedTasks();
         Collections.reverse(mList);
         adapter.setTasks(mList);
         adapter.notifyDataSetChanged();

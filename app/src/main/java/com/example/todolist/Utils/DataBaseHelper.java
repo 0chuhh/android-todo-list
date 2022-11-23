@@ -32,15 +32,13 @@ private static final String COL_1 = "Status";
 
 
     public DataBaseHelper(@Nullable Context context) {
-        super(context, DATABASE_NAME, null, 3);
+        super(context, DATABASE_NAME, null, 7);
 
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + SECOND_TABLE_NAME);
-        db.execSQL("DROP TABLE IF EXISTS " + THIRD_TABLE_NAME);
+
         db.execSQL("CREATE TABLE IF NOT EXISTS " +
                 TABLE_NAME +
                 "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name TEXT NOT NULL)");
@@ -54,6 +52,10 @@ private static final String COL_1 = "Status";
 
 
         db.execSQL("INSERT INTO " + TABLE_NAME+ " values (1,'Ожидает выполнения')");
+        db.execSQL("INSERT INTO " + TABLE_NAME+ " values (2,'Ожидает')");
+        db.execSQL("INSERT INTO " + TABLE_NAME+ " values (3,'Ожидает2')");
+        db.execSQL("INSERT INTO " + TABLE_NAME+ " values (4,'Ожидает23')");
+
         db.execSQL("INSERT INTO " + THIRD_TABLE_NAME + " VALUES (1,'Ожидает выполнения')");
         db.execSQL("INSERT INTO " + THIRD_TABLE_NAME + " VALUES (2,'Просрочено')");
         db.execSQL("INSERT INTO " + THIRD_TABLE_NAME + " VALUES (3,'Выполнено')");
@@ -205,12 +207,13 @@ private static final String COL_1 = "Status";
         for (GroupModel item: groups) {
             GroupedTasks groupedTask = new GroupedTasks();
             List<TaskModel> tasks = getAllTasksByGroupId(item.getId());
+            groupedTask.setGroup_name(item.getName());
             groupedTask.setTasks(tasks);
             groupedTask.setGroup_id(item.getId());
             groupedTasks.add(groupedTask);
         }
         for (GroupedTasks g: groupedTasks) {
-            System.out.println(g.getTasks());
+            System.out.println(g.getGroup_name());
         }
         return groupedTasks;
     }

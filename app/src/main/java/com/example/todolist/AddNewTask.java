@@ -98,7 +98,7 @@ public class AddNewTask extends BottomSheetDialogFragment {
                         TaskModel item = new TaskModel();
                         item.setName(text);
                         item.setStatus_id(1);
-                        item.setGroup_id(1);
+                        item.setGroup_id(4);
                         item.setDate_create(new Date());
                         item.setDate_end(new Date());
 
