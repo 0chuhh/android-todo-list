@@ -1,6 +1,7 @@
 package com.example.todolist.Adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,13 +9,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.content.DialogInterface;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,6 +28,8 @@ import com.example.todolist.AddNewTask;
 import com.example.todolist.MainActivity;
 import com.example.todolist.Model.GroupedTasks;
 import com.example.todolist.Model.TaskModel;
+import com.example.todolist.OnDialogCloseListener;
+import com.example.todolist.OnSwipeTouchListener;
 import com.example.todolist.R;
 import com.example.todolist.SplashActivity;
 import com.example.todolist.Utils.DataBaseHelper;
@@ -31,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder> {
+public class TaskAdapter extends  RecyclerView.Adapter<TaskAdapter.MyViewHolder> implements OnDialogCloseListener {
 
     private List<GroupedTasks> mList;
     private List<TaskModel> tasks;
@@ -74,6 +82,12 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder> 
         System.out.println(item.getTasks().size());
         String s = "0";
 
+
+        holder.groupelayout.setOnTouchListener(new OnSwipeTouchListener(activity){
+            public void onSwipeLeft() {
+                AddNewTask.newInstance().show(activity.getSupportFragmentManager() , AddNewTask.TAG);
+            }
+        });
 
 
         holder.groupname.setOnClickListener(new View.OnClickListener() {
@@ -125,19 +139,25 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder> 
         return mList.size();
     }
 
+    @Override
+    public void onDialogClose(DialogInterface dialogInterface) {
+        System.out.println("hello");
+    }
+
     public static class MyViewHolder extends RecyclerView.ViewHolder{
 //        CheckBox mCheckBox;
 //        TextView mTextView;
         private RecyclerView mrecyclerView;
         private Button groupsize;
         private TextView groupname;
+        private ConstraintLayout groupelayout;
 
         public MyViewHolder(@NonNull View itemView){
             super(itemView);
             mrecyclerView = itemView.findViewById(R.id.groupview);
             groupsize = itemView.findViewById(R.id.groupsize);
             groupname = itemView.findViewById(R.id.grouptext);
-
+            groupelayout = itemView.findViewById(R.id.groupelayout);
         }
     }
 }
