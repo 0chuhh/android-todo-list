@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.Nullable;
 
 import com.example.todolist.Model.GroupModel;
+import com.example.todolist.Model.GroupedTasks;
 import com.example.todolist.Model.TaskModel;
 
 import java.text.ParseException;
@@ -82,6 +83,7 @@ private static final String COL_1 = "Status";
         values.put("date_end", model.getDate_end().toString());
         values.put("status_id", model.getStatus_id());
         db.insert(SECOND_TABLE_NAME, null, values);
+        List<GroupedTasks> tasks = getGroupedTasks();
     }
      public void updateTask(int id, String task){
         db = this.getWritableDatabase();
@@ -116,6 +118,7 @@ private static final String COL_1 = "Status";
     public List<TaskModel> getAllTasks(){
         db = this.getWritableDatabase();
         Cursor cursor = null;
+
         List<TaskModel> modelList = new ArrayList<>();
         db.beginTransaction();
         SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzzz yyyy");
@@ -141,5 +144,74 @@ private static final String COL_1 = "Status";
             cursor.close();
         }
         return modelList;
+    }
+
+    public List<TaskModel> getAllTasksByGroupId(int id){
+        db = this.getWritableDatabase();
+        Cursor cursor = null;
+
+        List<TaskModel> modelList = new ArrayList<>();
+        db.beginTransaction();
+        SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzzz yyyy");
+        formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+        try{
+            cursor = db.rawQuery("SELECT * FROM " + SECOND_TABLE_NAME + " WHERE group_id = " + id,null);
+            if(cursor != null){
+                if(cursor.moveToFirst()){
+                    do{
+                        TaskModel task = new TaskModel();
+                        task.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
+                        task.setName(cursor.getString(cursor.getColumnIndexOrThrow("name")));
+                        task.setGroup_id(cursor.getInt(cursor.getColumnIndexOrThrow("group_id")));
+                        task.setDate_create(formatter.parse(cursor.getString(cursor.getColumnIndexOrThrow("date_create"))));
+                        modelList.add(task);
+                    }while(cursor.moveToNext());
+                }
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } finally {
+            db.endTransaction();
+            cursor.close();
+        }
+        return modelList;
+    }
+
+    public List<GroupModel> getAllGroups(){
+        db = this.getWritableDatabase();
+        Cursor cursor = null;
+        List<GroupModel> modelList = new ArrayList<>();
+        try{
+            cursor = db.rawQuery("SELECT* FROM " + TABLE_NAME,null);
+            if(cursor != null){
+                if(cursor.moveToFirst()){
+                    do{
+                        GroupModel group = new GroupModel();
+                        group.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
+                        group.setName(cursor.getString(cursor.getColumnIndexOrThrow("name")));
+                        modelList.add(group);
+                    }while(cursor.moveToNext());
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        return modelList;
+    }
+
+    public List<GroupedTasks> getGroupedTasks(){
+        List<GroupedTasks> groupedTasks = new ArrayList<>();
+        List<GroupModel> groups = getAllGroups();
+        for (GroupModel item: groups) {
+            GroupedTasks groupedTask = new GroupedTasks();
+            List<TaskModel> tasks = getAllTasksByGroupId(item.getId());
+            groupedTask.setTasks(tasks);
+            groupedTask.setGroup_id(item.getId());
+            groupedTasks.add(groupedTask);
+        }
+        for (GroupedTasks g: groupedTasks) {
+            System.out.println(g.getTasks());
+        }
+        return groupedTasks;
     }
 }
