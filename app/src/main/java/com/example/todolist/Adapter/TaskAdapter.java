@@ -23,6 +23,7 @@ import com.example.todolist.Utils.DataBaseHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder> {
 
@@ -46,7 +47,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder> 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         final TaskModel item = mList.get(position);
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", new Locale("ru"));
         holder.mTextView.setText(formatter.format(item.getDate_create()));
         holder.mCheckBox.setText(item.getName());
         holder.mCheckBox.setChecked(item.getStatus_id() == 1);
@@ -55,12 +56,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.MyViewHolder> 
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChacked) {
                 if(isChacked){
                     myDB.updateStatus(item.getId(), 1);
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            deleteTask(position);
-                        }
-                    },1200);
+
 
                 }else{
                     myDB.updateStatus(item.getId(), 0);

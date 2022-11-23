@@ -14,6 +14,7 @@ import com.example.todolist.Model.TaskModel;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -31,7 +32,7 @@ private static final String COL_1 = "Status";
 
 
     public DataBaseHelper(@Nullable Context context) {
-        super(context, DATABASE_NAME, null, 3);
+        super(context, DATABASE_NAME, null, 16);
 
     }
 
@@ -56,6 +57,8 @@ private static final String COL_1 = "Status";
         db.execSQL("INSERT INTO " + THIRD_TABLE_NAME + " VALUES (1,'Ожидает выполнения')");
         db.execSQL("INSERT INTO " + THIRD_TABLE_NAME + " VALUES (2,'Просрочено')");
         db.execSQL("INSERT INTO " + THIRD_TABLE_NAME + " VALUES (3,'Выполнено')");
+//        db.execSQL("INSERT INTO " + SECOND_TABLE_NAME+ " values (1,'Ожидает выполнения',1,'Wed Nov 23 15:05:14 GMT+09:00 2022','Wed Nov 23 15:05:14 GMT+09:00 2022',1)");
+
     }
 
     @Override
@@ -74,14 +77,16 @@ private static final String COL_1 = "Status";
     }
 
     public void insertTask(TaskModel model){
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("name", model.getName());
         values.put("group_id", model.getGroup_id());
-        values.put("date_create", model.getDate_create().toString());
+        values.put("date_create", formatter.format(model.getDate_create()));
         values.put("date_end", model.getDate_end().toString());
         values.put("status_id", model.getStatus_id());
         db.insert(SECOND_TABLE_NAME, null, values);
+
     }
      public void updateTask(int id, String task){
         db = this.getWritableDatabase();
@@ -118,8 +123,9 @@ private static final String COL_1 = "Status";
         Cursor cursor = null;
         List<TaskModel> modelList = new ArrayList<>();
         db.beginTransaction();
-        SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzzz yyyy");
-        formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         try{
             cursor = db.query(SECOND_TABLE_NAME, null, null, null,null,null,null);
             if(cursor != null){
@@ -129,6 +135,8 @@ private static final String COL_1 = "Status";
                         task.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
                         task.setName(cursor.getString(cursor.getColumnIndexOrThrow("name")));
                         task.setGroup_id(cursor.getInt(cursor.getColumnIndexOrThrow("group_id")));
+//                        String t = cursor.getString(cursor.getColumnIndexOrThrow("date_create"));
+//                        Date ti = formatter.parse(t);
                         task.setDate_create(formatter.parse(cursor.getString(cursor.getColumnIndexOrThrow("date_create"))));
                         modelList.add(task);
                     }while(cursor.moveToNext());
