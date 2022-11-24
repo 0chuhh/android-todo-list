@@ -5,7 +5,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -82,16 +84,38 @@ public class TaskAdapter extends  RecyclerView.Adapter<TaskAdapter.MyViewHolder>
         holder.groupname.setText(item.getGroup_name());
         System.out.println(item.getTasks().size());
         String s = "0";
+        holder.groupelayout.setOnTouchListener(new View.OnTouchListener() {
+            GestureDetector gestureDetector = new GestureDetector(activity, new GestureDetector.SimpleOnGestureListener(){
+                @Override
+                public boolean onSingleTapConfirmed(@NonNull MotionEvent e) {
 
-        holder.groupelayout.setOnLongClickListener(new View.OnLongClickListener() {
+                    return super.onSingleTapConfirmed(e);
+                }
+
+                @Override
+                public void onLongPress(MotionEvent e) {
+                    deleteGroup(position);
+
+                    super.onLongPress(e);
+                }
+
+                @Override
+                public boolean onDoubleTap(MotionEvent e) {
+                    AddNewTask ad = new AddNewTask();
+                    ad.newInstance(item.getGroup_id());
+                    ad.show(activity.getSupportFragmentManager(),AddNewTask.TAG );
+                    return super.onDoubleTap(e);
+                }
+
+
+            });
             @Override
-            public boolean onLongClick(View view) {
-                AddNewTask ad = new AddNewTask();
-                ad.newInstance(item.getGroup_id());
-                ad.show(activity.getSupportFragmentManager(),AddNewTask.TAG );
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                gestureDetector.onTouchEvent(motionEvent);
                 return true;
             }
         });
+
 
 
         holder.groupname.setOnClickListener(new View.OnClickListener() {
@@ -119,12 +143,24 @@ public class TaskAdapter extends  RecyclerView.Adapter<TaskAdapter.MyViewHolder>
     public void setExpand(){
 
     }
-//    public void deleteTask(int position){
-//        TaskModel item = mList.get(position);
-//        myDB.deleteTask(item.getId());
-//        mList.remove(position);
-//        notifyItemRemoved(position);
-//    }
+    public void deleteGroup(int position){
+        GroupedTasks item = mList.get(position);
+        myDB.deleteGroup(item.getGroup_id());
+        mList.remove(position);
+        DialogInterface d = new DialogInterface() {
+            @Override
+            public void cancel() {
+
+            }
+
+            @Override
+            public void dismiss() {
+
+            }
+        };
+        activity.onDialogClose(d);
+        notifyItemRemoved(position);
+    }
 
 //    public void editItem(int position){
 //        TaskModel item = mList.get(position);
