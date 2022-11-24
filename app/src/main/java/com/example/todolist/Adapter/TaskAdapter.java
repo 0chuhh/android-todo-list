@@ -65,27 +65,31 @@ public class TaskAdapter extends  RecyclerView.Adapter<TaskAdapter.MyViewHolder>
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         expanded = false;
-        holder.mrecyclerView.setVisibility(View.GONE);
+
         final GroupedTasks item = mList.get(position);
         tasks = new ArrayList<>();
         adapter = new TaskItemAdapter(myDB , activity);
         holder.mrecyclerView.setHasFixedSize(true);
         holder.mrecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         holder.mrecyclerView.setAdapter(adapter);
+        holder.groupsize.setText(item.getTasks().size()+"");
         tasks = item.getTasks();
         Collections.reverse(tasks);
         adapter.setTasks(tasks);
 
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         holder.groupname.setText(item.getGroup_name());
         System.out.println(item.getTasks().size());
         String s = "0";
 
-
-        holder.groupelayout.setOnTouchListener(new OnSwipeTouchListener(activity){
-            public void onSwipeLeft() {
-                AddNewTask.newInstance().show(activity.getSupportFragmentManager() , AddNewTask.TAG);
+        holder.groupelayout.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                AddNewTask ad = new AddNewTask();
+                ad.newInstance(item.getGroup_id());
+                ad.show(activity.getSupportFragmentManager(),AddNewTask.TAG );
+                return true;
             }
         });
 
@@ -141,14 +145,15 @@ public class TaskAdapter extends  RecyclerView.Adapter<TaskAdapter.MyViewHolder>
 
     @Override
     public void onDialogClose(DialogInterface dialogInterface) {
-        System.out.println("hello");
+        activity.onDialogClose(dialogInterface);
+
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder{
 //        CheckBox mCheckBox;
 //        TextView mTextView;
         private RecyclerView mrecyclerView;
-        private Button groupsize;
+        private TextView groupsize;
         private TextView groupname;
         private ConstraintLayout groupelayout;
 

@@ -32,7 +32,7 @@ private static final String COL_1 = "Status";
 
 
     public DataBaseHelper(@Nullable Context context) {
-        super(context, DATABASE_NAME, null, 7);
+        super(context, DATABASE_NAME, null, 12);
 
     }
 
@@ -51,10 +51,7 @@ private static final String COL_1 = "Status";
                 + THIRD_TABLE_NAME + "(id))");
 
 
-        db.execSQL("INSERT INTO " + TABLE_NAME+ " values (1,'Ожидает выполнения')");
-        db.execSQL("INSERT INTO " + TABLE_NAME+ " values (2,'Ожидает')");
-        db.execSQL("INSERT INTO " + TABLE_NAME+ " values (3,'Ожидает2')");
-        db.execSQL("INSERT INTO " + TABLE_NAME+ " values (4,'Ожидает23')");
+
 
         db.execSQL("INSERT INTO " + THIRD_TABLE_NAME + " VALUES (1,'Ожидает выполнения')");
         db.execSQL("INSERT INTO " + THIRD_TABLE_NAME + " VALUES (2,'Просрочено')");
@@ -85,7 +82,6 @@ private static final String COL_1 = "Status";
         values.put("date_end", model.getDate_end().toString());
         values.put("status_id", model.getStatus_id());
         db.insert(SECOND_TABLE_NAME, null, values);
-        List<GroupedTasks> tasks = getGroupedTasks();
     }
      public void updateTask(int id, String task){
         db = this.getWritableDatabase();
@@ -123,8 +119,8 @@ private static final String COL_1 = "Status";
 
         List<TaskModel> modelList = new ArrayList<>();
         db.beginTransaction();
-        SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzzz yyyy");
-        formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
         try{
             cursor = db.query(SECOND_TABLE_NAME, null, null, null,null,null,null);
             if(cursor != null){
@@ -134,14 +130,12 @@ private static final String COL_1 = "Status";
                         task.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
                         task.setName(cursor.getString(cursor.getColumnIndexOrThrow("name")));
                         task.setGroup_id(cursor.getInt(cursor.getColumnIndexOrThrow("group_id")));
-                        task.setDate_create(formatter.parse(cursor.getString(cursor.getColumnIndexOrThrow("date_create"))));
+//                        task.setDate_create(formatter.parse(cursor.getString(cursor.getColumnIndexOrThrow("date_create"))));
                         modelList.add(task);
                     }while(cursor.moveToNext());
                 }
             }
-        } catch (ParseException e) {
-            e.printStackTrace();
-        } finally {
+        }  finally {
             db.endTransaction();
             cursor.close();
         }
@@ -154,8 +148,10 @@ private static final String COL_1 = "Status";
 
         List<TaskModel> modelList = new ArrayList<>();
         db.beginTransaction();
-        SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzzz yyyy");
-        formatter.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+        SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy");
+
+        SimpleDateFormat formatter2 = new SimpleDateFormat("yyyy-MM-dd");
+        formatter.setTimeZone(TimeZone.getTimeZone("Asia/Seoul"));
         try{
             cursor = db.rawQuery("SELECT * FROM " + SECOND_TABLE_NAME + " WHERE group_id = " + id,null);
             if(cursor != null){
@@ -165,20 +161,40 @@ private static final String COL_1 = "Status";
                         task.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
                         task.setName(cursor.getString(cursor.getColumnIndexOrThrow("name")));
                         task.setGroup_id(cursor.getInt(cursor.getColumnIndexOrThrow("group_id")));
-                        task.setDate_create(formatter.parse(cursor.getString(cursor.getColumnIndexOrThrow("date_create"))));
+                        String s = cursor.getString(cursor.getColumnIndexOrThrow("date_create"));
+                        System.out.println(formatter2.format(new Date(s)));
+                        task.setDate_create(new Date(s));
+                        task.setDate_end(new Date(cursor.getString(cursor.getColumnIndexOrThrow("date_end"))));
+
                         modelList.add(task);
                     }while(cursor.moveToNext());
                 }
             }
-        } catch (ParseException e) {
-            e.printStackTrace();
-        } finally {
+        }  finally {
             db.endTransaction();
             cursor.close();
         }
         return modelList;
     }
+    public String getGroupName(int id) {
+        db = this.getWritableDatabase();
+        Cursor cursor = null;
+        String name = new String();
+        try {
+            cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE id=" + id, null);
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    do {
+                        name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+                    } while (cursor.moveToNext());
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        return name;
 
+    }
     public List<GroupModel> getAllGroups(){
         db = this.getWritableDatabase();
         Cursor cursor = null;

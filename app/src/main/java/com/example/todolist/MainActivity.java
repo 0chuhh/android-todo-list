@@ -48,7 +48,8 @@ public class MainActivity extends AppCompatActivity implements OnDialogCloseList
         mfab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AddNewTask.newInstance().show(getSupportFragmentManager() , AddNewTask.TAG);
+                AddNewGroup.newInstance().show(getSupportFragmentManager() , AddNewGroup.TAG);
+
             }
         });
 

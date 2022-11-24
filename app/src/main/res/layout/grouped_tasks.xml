@@ -17,7 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="20dp">
 
             <ImageView
                 android:id="@+id/imageView3"
@@ -47,13 +48,16 @@
                 android:layout_weight="1"
                 app:srcCompat="@drawable/arrow_down" />
 
-            <Button
+            <TextView
                 android:id="@+id/groupsize"
-                android:layout_width="5dp"
+                android:layout_width="10dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
                 android:layout_weight="1"
-                android:text="0" />
+                android:background="@color/purple_200"
+                android:gravity="center"
+                android:padding="0dp"
+                android:text="0"
+                android:textColor="#FFFFFF" />
 
         </LinearLayout>
 
@@ -61,7 +65,7 @@
             android:id="@+id/groupview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone">
+            android:visibility="visible">
 
         </androidx.recyclerview.widget.RecyclerView>
 

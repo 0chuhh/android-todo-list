@@ -16,11 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.todolist.Model.GroupModel;
-import com.example.todolist.Model.TaskModel;
 import com.example.todolist.Utils.DataBaseHelper;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-
-import java.util.Date;
 
 public class AddNewGroup extends BottomSheetDialogFragment {
     public static final String TAG = "AddNewTask";
@@ -42,7 +39,7 @@ public class AddNewGroup extends BottomSheetDialogFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mEditText = view.findViewById(R.id.edittext);
+        mEditText = view.findViewById(R.id.edittextgroup);
         mSaveButton = view.findViewById(R.id.button_save);
 
         myDB = new DataBaseHelper(getActivity());

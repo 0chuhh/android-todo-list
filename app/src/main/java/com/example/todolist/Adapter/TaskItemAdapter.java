@@ -1,5 +1,6 @@
 package com.example.todolist.Adapter;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,9 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.todolist.AddNewTask;
@@ -21,6 +24,7 @@ import com.example.todolist.SplashActivity;
 import com.example.todolist.Utils.DataBaseHelper;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 public class TaskItemAdapter extends RecyclerView.Adapter<TaskItemAdapter.MyViewHolder> {
@@ -44,8 +48,13 @@ public class TaskItemAdapter extends RecyclerView.Adapter<TaskItemAdapter.MyView
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         final TaskModel item = mList.get(position);
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
-        holder.mTextView.setText(formatter.format(item.getDate_create()));
+        if (item.getDate_create().after(item.getDate_end())){
+            holder.calendarimage.setColorFilter(ContextCompat.getColor(getContext(), R.color.error));
+            holder.mTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.error));
+        }
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+        holder.mTextView.setText(formatter.format(item.getDate_end()));
         holder.mCheckBox.setText(item.getName());
         holder.mCheckBox.setChecked(item.getStatus_id() == 1);
         holder.mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -60,8 +69,6 @@ public class TaskItemAdapter extends RecyclerView.Adapter<TaskItemAdapter.MyView
                         }
                     },1200);
 
-                }else{
-                    myDB.updateStatus(item.getId(), 0);
                 }
             }
         });
@@ -78,6 +85,18 @@ public class TaskItemAdapter extends RecyclerView.Adapter<TaskItemAdapter.MyView
         TaskModel item = mList.get(position);
         myDB.deleteTask(item.getId());
         mList.remove(position);
+        DialogInterface d = new DialogInterface() {
+            @Override
+            public void cancel() {
+
+            }
+
+            @Override
+            public void dismiss() {
+
+            }
+        };
+        activity.onDialogClose(d);
         notifyItemRemoved(position);
     }
 
@@ -100,11 +119,13 @@ public class TaskItemAdapter extends RecyclerView.Adapter<TaskItemAdapter.MyView
 
     public static class MyViewHolder extends RecyclerView.ViewHolder{
         CheckBox mCheckBox;
+        ImageView calendarimage;
         TextView mTextView;
         public MyViewHolder(@NonNull View itemView){
             super(itemView);
             mCheckBox = itemView.findViewById(R.id.mCheckbox);
             mTextView = itemView.findViewById(R.id.date);
+            calendarimage = itemView.findViewById(R.id.calendarimage);
         }
     }
 }
